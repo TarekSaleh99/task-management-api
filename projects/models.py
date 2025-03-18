@@ -4,7 +4,11 @@ from django.conf import settings
 
 
 
+
 class Project(models.Model):
+    class Meta:
+         # Ensure that each owner can only have one project with the same title
+        unique_together = ('title', 'owner')
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('completed', 'Completed'),

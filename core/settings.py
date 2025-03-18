@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 
     # Installed apps
     'projects',
+    'tasks',
     'djoser',
     'rest_framework_simplejwt',
     'rest_framework',
