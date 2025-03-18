@@ -16,10 +16,10 @@ class Task(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='todo')
-    assigned_to = models.ForeignKey(
+    assigned_to = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True, blank=True
+        related_name='assigned_tasks',
+        blank=True
         )
     due_date = models.DateTimeField(default=now, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
