@@ -21,9 +21,10 @@ class Project(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        null= True,
         related_name='projects'
         )
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='project_members') 
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='project_members') 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
