@@ -17,3 +17,5 @@ staticfiles/
 
 # Virtual Environment
 *.env
+
+frontend/

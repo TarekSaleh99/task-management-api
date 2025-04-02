@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from .models import Task
 from .serializers import TaskSerializer
+from .celery_tasks import send_task_notification
 
 
 
@@ -21,6 +22,11 @@ class TaskViewSet(viewsets.ModelViewSet):
         task = serializer.save()
         if task.assigned_to.exists() and not task.assigned_to.filter(id__in=task.project.members.all()).exists():
             raise PermissionDenied("Assigned users must be project members.")
+        
+        # Notify assigned users asunchronously using celery
+        for user in task.assigned_to.all():
+            send_task_notification.delay(user.id, task.id, "A new task has been assigned to you.")
+
     
     def perform_update(self, serializer):
         """Allow only the project owner to edit tasks."""
@@ -28,6 +34,11 @@ class TaskViewSet(viewsets.ModelViewSet):
         if task.project.owner != self.request.user:
             raise PermissionDenied('Only the project owner can edit tasks.')
         serializer.save()
+
+        # Notify assigned users about task updates
+        for user in task.assigned_to.all():
+            send_task_notification.delay(user.id, task.id, "Your task has been updated.")
+
     
     def perform_destroy(self, instance):
         """Allow only the project owner to delete tasks."""
